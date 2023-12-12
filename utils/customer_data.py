@@ -5,7 +5,7 @@ from Core.models import Customer
 
 def add_customer_data():
     df = pd.read_excel("utils/customer_data.xlsx")
-    for row in df.iterrows():
+    for index, row in df.iterrows():
         phone_number = "+91" + str(row["Phone Number"])
         Customer.objects.create(
             customer_id=row["Customer ID"],

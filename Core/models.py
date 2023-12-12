@@ -18,11 +18,14 @@ class Customer(models.Model):
 
 class Loan(models.Model):
     customer_id = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    loan_id = models.IntegerField()
-    loan_amount = models.IntegerField()
-    tenure = models.IntegerField()
-    interest_rate = models.DecimalField(max_digits=2, decimal_places=2)
-    monthly_emi = models.IntegerField()
-    emi_paid_on_time = models.IntegerField()
+    loan_id = models.BigIntegerField()
+    loan_amount = models.BigIntegerField()
+    tenure = models.BigIntegerField()
+    interest_rate = models.DecimalField(max_digits=10, decimal_places=2)
+    monthly_emi = models.BigIntegerField()
+    emi_paid_on_time = models.BigIntegerField()
     start_date = models.DateField()
     end_date = models.DateField()
+
+    def __str__(self) -> str:
+        return f"{self.customer_id.first_name} -- {self.customer_id.last_name} -- {self.loan_id}"
