@@ -1,8 +1,6 @@
 from rest_framework import serializers
-from django.db.models import F, Sum
-from django.utils import timezone
-import crud
 
+from .crud import create_customer
 from .models import Customer, Loan
 
 
@@ -14,7 +12,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     @staticmethod
     def create(data):
         approved_limit = round(36 * data["monthly_salary"], -5)
-        customer = crud.create_customer(
+        customer = create_customer(
             first_name=data["first_name"],
             last_name=data["last_name"],
             age=data["age"],
