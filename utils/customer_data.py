@@ -7,7 +7,7 @@ def add_customer_data():
     df = pd.read_excel("utils/customer_data.xlsx")
     for index, row in df.iterrows():
         phone_number = "+91" + str(row["Phone Number"])
-        Customer.objects.create(
+        Customer.objects.update_or_create(
             customer_id=row["Customer ID"],
             first_name=row["First Name"],
             last_name=row["Last Name"],

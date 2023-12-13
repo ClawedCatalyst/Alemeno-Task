@@ -1,6 +1,6 @@
-from rest_framework.exceptions import ValidationError
 from django.db.models import F, Sum
 from django.utils import timezone
+from rest_framework.exceptions import ValidationError
 
 from .models import Customer, Loan
 
@@ -141,3 +141,20 @@ def get_monthly_installment(
         / ((1 + monthly_interest_rate) ** total_payments - 1)
     )
     return emi
+
+
+def create_loan_with_customer_id(
+    customer_id: Customer,
+    loan_amount: float,
+    tenure: int,
+    interest_rate: float,
+    monthly_emi: int,
+) -> Loan:
+    loan_obj = Loan.objects.create(
+        customer_id=customer_id,
+        loan_amount=loan_amount,
+        tenure=tenure,
+        interest_rate=interest_rate,
+        monthly_emi=monthly_emi,
+    )
+    return loan_obj

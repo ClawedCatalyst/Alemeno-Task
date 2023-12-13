@@ -7,7 +7,7 @@ import utils.load_data
 
 from .crud import (get_correct_interest_rate, get_credit_rating,
                    get_customer_from_customer_id, get_monthly_installment)
-from .serializers import RegisterSerializer
+from .serializers import CreateLoanSerializer, RegisterSerializer
 
 
 class AddCustomerData(APIView):
@@ -24,6 +24,10 @@ class AddLoanData(APIView):
 
 class Register(generics.CreateAPIView):
     serializer_class = RegisterSerializer
+
+
+class CreateLoan(generics.CreateAPIView):
+    serializer_class = CreateLoanSerializer
 
 
 class CheckLoanEligibity(APIView):
@@ -46,7 +50,7 @@ class CheckLoanEligibity(APIView):
         monthly_installment = get_monthly_installment(
             interest_rate=correct_interest_rate, loan_amount=loan_amount, tenure=tenure
         )
-        data = {            
+        data = {
             "customer_id": customer_id,
             "approval": True,
             "interest_rate": interest_rate,
@@ -54,8 +58,5 @@ class CheckLoanEligibity(APIView):
             "tenure": tenure,
             "monthly_installment": monthly_installment,
         }
-        response = {
-            "success": True,
-            "data": data
-        }
+        response = {"success": True, "data": data}
         return Response(response)
