@@ -1,4 +1,7 @@
 from rest_framework import serializers
+from django.db.models import F, Sum
+from django.utils import timezone
+import crud
 
 from .models import Customer, Loan
 
@@ -11,7 +14,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     @staticmethod
     def create(data):
         approved_limit = round(36 * data["monthly_salary"], -5)
-        customer = Customer.objects.create(
+        customer = crud.create_customer(
             first_name=data["first_name"],
             last_name=data["last_name"],
             age=data["age"],
@@ -21,7 +24,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return customer
 
-    def to_representation(self, instance):
+    @staticmethod
+    def to_representation(instance):
         data = super().to_representation(instance)
         data["approved_limit"] = instance.approved_limit
 
