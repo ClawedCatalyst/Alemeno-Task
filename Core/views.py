@@ -6,18 +6,22 @@ import utils.customer_data
 import utils.load_data
 
 from .crud import (get_correct_interest_rate, get_credit_rating,
-                   get_customer_from_customer_id, get_monthly_installment)
-from .serializers import CreateLoanSerializer, RegisterSerializer
+                   get_customer_from_customer_id, get_loan_obj_from_load_id,
+                   get_loan_objs_from_customer_id, get_monthly_installment)
+from .serializers import (CreateLoanSerializer, LoanSerializer,
+                          RegisterSerializer)
 
 
 class AddCustomerData(APIView):
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
         utils.customer_data.add_customer_data()
         return Response("Customer Data Added Successfully")
 
 
 class AddLoanData(APIView):
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
         utils.load_data.add_loan_data()
         return Response("Loan Data Added Successfully")
 
@@ -30,8 +34,27 @@ class CreateLoan(generics.CreateAPIView):
     serializer_class = CreateLoanSerializer
 
 
+class GetLoanFromLoanID(generics.ListAPIView):
+    serializer_class = LoanSerializer
+
+    def get(self, request, pk):
+        loan_obj = get_loan_obj_from_load_id(loan_id=pk)
+        serializer = self.serializer_class(loan_obj, many=False)
+        return Response(serializer.data)
+
+
+class GetLoansFromCustomerID(generics.ListAPIView):
+    serializer_class = LoanSerializer
+
+    def get(self, request, pk):
+        loan_obj = get_loan_objs_from_customer_id(customer_id=pk)
+        serializer = self.serializer_class(loan_obj, many=True, context={"many": True})
+        return Response(serializer.data)
+
+
 class CheckLoanEligibity(APIView):
-    def post(self, request):
+    @staticmethod
+    def post(request):
         customer_id = request.data.get("customer_id")
         loan_amount = request.data.get("loan_amount")
         interest_rate = request.data.get("interest_rate")

@@ -24,10 +24,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return customer
 
-    @staticmethod
-    def to_representation(instance):
-        data = super().to_representation(instance)
+    def to_representation(self, instance):
+        loan = self.context.get("loan_obj", False)
+        data = super(RegisterSerializer, self).to_representation(instance)
         data["approved_limit"] = instance.approved_limit
+        if loan:
+            return data
 
         response_data = {"success": True, "data": data}
 
@@ -39,7 +41,8 @@ class CreateLoanSerializer(serializers.ModelSerializer):
         model = Loan
         fields = ["customer_id", "loan_amount", "tenure", "interest_rate"]
 
-    def create(self, data):
+    @staticmethod
+    def create(data):
         customer = get_customer_from_customer_id(
             customer_id=data["customer_id"].customer_id
         )
@@ -79,4 +82,23 @@ class CreateLoanSerializer(serializers.ModelSerializer):
 
         response_data = {"success": True, "data": data}
 
+        return response_data
+
+
+class LoanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Loan
+        fields = ["loan_id", "loan_amount", "interest_rate", "monthly_emi", "tenure"]
+
+    def to_representation(self, instance):
+        validated_data = super().to_representation(instance)
+        many = self.context.get("many", False)
+        if many:
+            return validated_data
+
+        customer = RegisterSerializer(
+            instance.customer_id, context={"loan_obj": True}
+        ).data
+        validated_data["customer"] = customer
+        response_data = {"success": True, "data": validated_data}
         return response_data

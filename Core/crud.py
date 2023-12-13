@@ -158,3 +158,17 @@ def create_loan_with_customer_id(
         monthly_emi=monthly_emi,
     )
     return loan_obj
+
+
+def get_loan_obj_from_load_id(loan_id: int) -> Loan:
+    loan_obj = Loan.objects.filter(loan_id=loan_id).first()
+    if not loan_obj:
+        raise ValidationError(
+            {"success": False, "error": "Loan Object with given ID does not exist"}
+        )
+    return loan_obj
+
+
+def get_loan_objs_from_customer_id(customer_id: int) -> list[Loan]:
+    loan_objs = Loan.objects.filter(customer_id=customer_id)
+    return loan_objs
